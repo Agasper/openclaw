@@ -822,7 +822,6 @@ export function loadOpenClawPlugins(options: PluginLoadOptions = {}): PluginRegi
   // Lazy: avoid creating the Jiti loader when all plugins are disabled (common in unit tests).
   const jitiLoaders = new Map<string, ReturnType<typeof createJiti>>();
   const getJiti = (modulePath: string) => {
-    const tryNative = shouldPreferNativeJiti(modulePath);
     // Pass loader's moduleUrl so the openclaw root can always be resolved even when
     // loading external plugins from outside the installation directory (e.g. ~/.openclaw/extensions/).
     const aliasMap = buildPluginLoaderAliasMap(
@@ -832,20 +831,20 @@ export function loadOpenClawPlugins(options: PluginLoadOptions = {}): PluginRegi
       options.pluginSdkResolution,
     );
     const cacheKey = JSON.stringify({
-      tryNative,
       aliasMap: Object.entries(aliasMap).toSorted(([left], [right]) => left.localeCompare(right)),
     });
     const cached = jitiLoaders.get(cacheKey);
     if (cached) {
       return cached;
     }
+    // Keep tryNative: true (from buildPluginLoaderJitiOptions) so that built
+    // .js dependencies resolved through aliases use Node's native module
+    // loader instead of being needlessly re-transpiled by Jiti.  For .ts
+    // entry points (e.g. third-party plugins distributed as TypeScript),
+    // native loading fails gracefully and Jiti falls back to transpilation
+    // with its own extension resolution (.js -> .ts remapping).
     const loader = createJiti(import.meta.url, {
       ...buildPluginLoaderJitiOptions(aliasMap),
-      // Source .ts runtime shims import sibling ".js" specifiers that only exist
-      // after build. Disable native loading for source entries so Jiti rewrites
-      // those imports against the source graph, while keeping native dist/*.js
-      // loading for the canonical built module graph.
-      tryNative,
     });
     jitiLoaders.set(cacheKey, loader);
     return loader;
