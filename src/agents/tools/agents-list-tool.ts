@@ -24,10 +24,10 @@ export function createAgentsListTool(opts?: {
   requesterAgentIdOverride?: string;
 }): AnyAgentTool {
   return {
-    label: "Agents",
-    name: "agents_list",
+    label: "List Agents",
+    name: "list_agents",
     description:
-      'List OpenClaw agent ids you can target with `sessions_spawn` when `runtime="subagent"` (based on subagent allowlists).',
+      'Enumerate available OpenClaw agent identifiers that can be passed to `spawn_sessions` with `runtime="subagent"` (filtered by subagent allowlists).',
     parameters: AgentsListToolSchema,
     execute: async () => {
       const cfg = loadConfig();

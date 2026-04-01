@@ -65,13 +65,13 @@ function resolveToolErrorWarningPolicy(params: {
     return { showWarning: false, includeDetails };
   }
   const normalizedToolName = params.lastToolError.toolName.trim().toLowerCase();
-  if ((normalizedToolName === "exec" || normalizedToolName === "bash") && !includeDetails) {
+  if ((normalizedToolName === "shell_exec" || normalizedToolName === "bash") && !includeDetails) {
     return { showWarning: false, includeDetails };
   }
-  // sessions_send timeouts and errors are transient inter-session communication
+  // send_sessions timeouts and errors are transient inter-session communication
   // issues — the message may still have been delivered. Suppress warnings to
   // prevent raw error text from leaking into the chat surface (#23989).
-  if (normalizedToolName === "sessions_send") {
+  if (normalizedToolName === "send_sessions") {
     return { showWarning: false, includeDetails };
   }
   const isMutatingToolError =

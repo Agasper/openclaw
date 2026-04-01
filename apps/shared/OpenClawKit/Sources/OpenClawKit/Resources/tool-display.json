@@ -30,7 +30,7 @@
       "title": "Bash",
       "detailKeys": ["command"]
     },
-    "process": {
+    "process_ctrl": {
       "emoji": "🧰",
       "title": "Process",
       "detailKeys": ["sessionId"]
@@ -55,7 +55,7 @@
       "title": "Attach",
       "detailKeys": ["path", "url", "fileName"]
     },
-    "browser": {
+    "web_browser": {
       "emoji": "🌐",
       "title": "Browser",
       "actions": {

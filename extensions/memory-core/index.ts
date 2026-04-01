@@ -35,7 +35,7 @@ export default definePluginEntry({
           config: ctx.config,
           agentSessionKey: ctx.sessionKey,
         }),
-      { names: ["memory_search"] },
+      { names: ["search_memory"] },
     );
 
     api.registerTool(
@@ -44,7 +44,7 @@ export default definePluginEntry({
           config: ctx.config,
           agentSessionKey: ctx.sessionKey,
         }),
-      { names: ["memory_get"] },
+      { names: ["get_memory"] },
     );
 
     api.registerCli(

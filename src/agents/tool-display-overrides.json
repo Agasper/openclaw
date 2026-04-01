@@ -1,7 +1,7 @@
 {
   "version": 1,
   "tools": {
-    "exec": {
+    "shell_exec": {
       "emoji": "🛠️",
       "title": "Exec",
       "detailKeys": ["command"]
@@ -16,27 +16,27 @@
       "title": "Tool Call",
       "detailKeys": []
     },
-    "session_status": {
+    "status_session": {
       "emoji": "📊",
       "title": "Session Status",
       "detailKeys": ["sessionKey", "model"]
     },
-    "sessions_list": {
+    "list_sessions": {
       "emoji": "🗂️",
       "title": "Sessions",
       "detailKeys": ["kinds", "limit", "activeMinutes", "messageLimit"]
     },
-    "sessions_send": {
+    "send_sessions": {
       "emoji": "📨",
       "title": "Session Send",
       "detailKeys": ["label", "sessionKey", "agentId", "timeoutSeconds"]
     },
-    "sessions_history": {
+    "history_sessions": {
       "emoji": "🧾",
       "title": "Session History",
       "detailKeys": ["sessionKey", "limit", "includeTools"]
     },
-    "sessions_spawn": {
+    "spawn_sessions": {
       "emoji": "🧑‍🔧",
       "title": "Sub-agent",
       "detailKeys": [
@@ -49,7 +49,7 @@
         "cleanup"
       ]
     },
-    "subagents": {
+    "sub_agents": {
       "emoji": "🤖",
       "title": "Subagents",
       "actions": {
@@ -67,17 +67,17 @@
         }
       }
     },
-    "agents_list": {
+    "list_agents": {
       "emoji": "🧭",
       "title": "Agents",
       "detailKeys": []
     },
-    "memory_search": {
+    "search_memory": {
       "emoji": "🧠",
       "title": "Memory Search",
       "detailKeys": ["query"]
     },
-    "memory_get": {
+    "get_memory": {
       "emoji": "📓",
       "title": "Memory Get",
       "detailKeys": ["path", "from", "lines"]
@@ -97,7 +97,7 @@
       "title": "Code Execution",
       "detailKeys": ["task"]
     },
-    "message": {
+    "send_message": {
       "emoji": "✉️",
       "title": "Message",
       "actions": {

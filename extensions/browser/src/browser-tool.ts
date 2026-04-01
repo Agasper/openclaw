@@ -374,10 +374,10 @@ export function createBrowserTool(opts?: {
   const hostHint =
     opts?.allowHostControl === false ? "Host target blocked by policy." : "Host target allowed.";
   return {
-    label: "Browser",
-    name: "browser",
+    label: "Web Browser",
+    name: "web_browser",
     description: [
-      "Control the browser via OpenClaw's browser control server (status/start/stop/profiles/tabs/open/snapshot/screenshot/actions).",
+      "Interact with the browser through OpenClaw's browser control server (status/start/stop/profiles/tabs/open/snapshot/screenshot/actions).",
       "Browser choice: omit profile by default for the isolated OpenClaw-managed browser (`openclaw`).",
       'For the logged-in user browser on the local host, use profile="user". A supported Chromium-based browser (v144+) must be running. Use only when existing logins/cookies matter and the user is present.',
       'When a node-hosted browser proxy is available, the tool may auto-route to it. Pin a node with node=<id|name> or target="node".',

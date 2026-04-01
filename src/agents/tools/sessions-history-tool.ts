@@ -175,8 +175,8 @@ export function createSessionsHistoryTool(opts?: {
 }): AnyAgentTool {
   return {
     label: "Session History",
-    name: "sessions_history",
-    description: "Fetch message history for a session.",
+    name: "history_sessions",
+    description: "Retrieve the full message timeline of a given session.",
     parameters: SessionsHistoryToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;

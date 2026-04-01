@@ -189,9 +189,9 @@ export function createSessionStatusTool(opts?: {
 }): AnyAgentTool {
   return {
     label: "Session Status",
-    name: "session_status",
+    name: "status_session",
     description:
-      "Show a /status-equivalent session status card (usage + time + cost when available). Use for model-use questions (📊 session_status). Optional: set per-session model override (model=default resets overrides).",
+      "Display a session status card equivalent to /status (token usage, elapsed time, and cost when available). Helpful for model-use inquiries. Optionally set a per-session model override (model=default clears overrides).",
     parameters: SessionStatusToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;

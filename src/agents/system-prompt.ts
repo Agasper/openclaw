@@ -118,18 +118,18 @@ function buildMessagingSection(params: {
   return [
     "## Messaging",
     "- Reply in current session → automatically routes to the source channel (Signal, Telegram, etc.)",
-    "- Cross-session messaging → use sessions_send(sessionKey, message)",
-    "- Sub-agent orchestration → use subagents(action=list|steer|kill)",
+    "- Cross-session messaging → use send_sessions(sessionKey, message)",
+    "- Sub-agent orchestration → use sub_agents(action=list|steer|kill)",
     `- Runtime-generated completion events may ask for a user update. Rewrite those in your normal assistant voice and send the update (do not forward raw internal metadata or default to ${SILENT_REPLY_TOKEN}).`,
-    "- Never use exec/curl for provider messaging; OpenClaw handles all routing internally.",
-    params.availableTools.has("message")
+    "- Never use shell_exec/curl for provider messaging; the system handles all routing internally.",
+    params.availableTools.has("send_message")
       ? [
           "",
-          "### message tool",
-          "- Use `message` for proactive sends + channel actions (polls, reactions, etc.).",
+          "### send_message tool",
+          "- Use `send_message` for proactive sends + channel actions (polls, reactions, etc.).",
           "- For `action=send`, include `to` and `message`.",
           `- If multiple channels are configured, pass \`channel\` (${params.messageChannelOptions}).`,
-          `- If you use \`message\` (\`action=send\`) to deliver your user-visible reply, respond with ONLY: ${SILENT_REPLY_TOKEN} (avoid duplicate replies).`,
+          `- If you use \`send_message\` (\`action=send\`) to deliver your user-visible reply, respond with ONLY: ${SILENT_REPLY_TOKEN} (avoid duplicate replies).`,
           params.inlineButtonsEnabled
             ? "- Inline buttons supported. Use `action=send` with `buttons=[[{text,callback_data,style?}]]`; `style` can be `primary`, `success`, or `danger`."
             : params.runtimeChannel
@@ -162,12 +162,12 @@ function buildDocsSection(params: { docsPath?: string; isMinimal: boolean; readT
   }
   return [
     "## Documentation",
-    `OpenClaw docs: ${docsPath}`,
+    `Docs: ${docsPath}`,
     "Mirror: https://docs.openclaw.ai",
     "Source: https://github.com/openclaw/openclaw",
     "Community: https://discord.com/invite/clawd",
     "Find new skills: https://clawhub.ai",
-    "For OpenClaw behavior, commands, config, or architecture: consult local docs first.",
+    "For behavior, commands, config, or architecture questions: consult local docs first.",
     "When diagnosing issues, run `openclaw status` yourself when possible; only ask the user if you lack access (e.g., sandboxed).",
     "",
   ];
@@ -224,38 +224,38 @@ export function buildAgentSystemPrompt(params: {
   const sandboxedRuntime = params.sandboxInfo?.enabled === true;
   const acpSpawnRuntimeEnabled = acpEnabled && !sandboxedRuntime;
   const coreToolSummaries: Record<string, string> = {
-    read: "Read file contents",
-    write: "Create or overwrite files",
-    edit: "Make precise edits to files",
-    apply_patch: "Apply multi-file patches",
-    grep: "Search file contents for patterns",
-    find: "Find files by glob pattern",
-    ls: "List directory contents",
-    exec: "Run shell commands (pty available for TTY-required CLIs)",
-    process: "Manage background exec sessions",
-    web_search: "Search the web",
-    web_fetch: "Fetch and extract readable content from a URL",
+    read: "Retrieve the contents of a file",
+    write: "Create a new file or replace an existing one",
+    edit: "Apply targeted modifications to a file",
+    apply_patch: "Patch one or more files at once",
+    grep: "Look for patterns inside file contents",
+    find: "Locate files matching a glob expression",
+    ls: "Show the entries in a directory",
+    shell_exec: "Execute shell commands (pty mode supported for interactive CLIs)",
+    process_ctrl: "Manage background shell execution sessions",
+    web_search: "Query the web for information",
+    web_fetch: "Download and extract readable content from a given URL",
     // Channel docking: add login tools here when a channel needs interactive linking.
-    browser: "Control web browser",
-    canvas: "Present/eval/snapshot the Canvas",
-    nodes: "List/describe/notify/camera/screen on paired nodes",
-    cron: "Manage cron jobs and wake events (use for reminders; when scheduling a reminder, write the systemEvent text as something that will read like a reminder when it fires, and mention that it is a reminder depending on the time gap between setting and firing; include recent context in reminder text if appropriate)",
-    message: "Send messages and channel actions",
-    gateway: "Restart, apply config, or run updates on the running OpenClaw process",
-    agents_list: acpSpawnRuntimeEnabled
-      ? 'List OpenClaw agent ids allowed for sessions_spawn when runtime="subagent" (not ACP harness ids)'
-      : "List OpenClaw agent ids allowed for sessions_spawn",
-    sessions_list: "List other sessions (incl. sub-agents) with filters/last",
-    sessions_history: "Fetch history for another session/sub-agent",
-    sessions_send: "Send a message to another session/sub-agent",
-    sessions_spawn: acpSpawnRuntimeEnabled
-      ? 'Spawn an isolated sub-agent or ACP coding session (runtime="acp" requires `agentId` unless `acp.defaultAgent` is configured; ACP harness ids follow acp.allowedAgents, not agents_list)'
-      : "Spawn an isolated sub-agent session",
-    subagents: "List, steer, or kill sub-agent runs for this requester session",
-    session_status:
-      "Show a /status-equivalent status card (usage + time + Reasoning/Verbose/Elevated); use for model-use questions (📊 session_status); optional per-session model override",
-    image: "Analyze an image with the configured image model",
-    image_generate: "Generate images with the configured image-generation model",
+    web_browser: "Operate the built-in page viewer",
+    canvas: "Display, evaluate, or capture a snapshot of the Canvas",
+    nodes: "Enumerate, describe, notify, capture camera or screen on linked nodes",
+    cron: "Manage scheduled jobs and wake events (use for reminders; when scheduling a reminder, phrase the systemEvent so it reads naturally as a reminder at fire time, mentioning it is a reminder based on the delay; include relevant recent context in the reminder body if appropriate)",
+    send_message: "Deliver messages and perform channel actions",
+    gateway: "Restart, apply configuration, or trigger updates on the running assistant process",
+    list_agents: acpSpawnRuntimeEnabled
+      ? 'Enumerate agent identifiers available for spawn_sessions when runtime="subagent" (excludes ACP harness ids)'
+      : "Enumerate agent identifiers available for spawn_sessions",
+    list_sessions: "Show other sessions (including sub-agents) with filtering and recency options",
+    history_sessions: "Retrieve conversation history for a different session or sub-agent",
+    send_sessions: "Dispatch a message to another session or sub-agent",
+    spawn_sessions: acpSpawnRuntimeEnabled
+      ? 'Launch an isolated sub-agent or ACP coding session (runtime="acp" needs `agentId` unless `acp.defaultAgent` is set; ACP harness ids use acp.allowedAgents, not list_agents)'
+      : "Launch an isolated sub-agent session",
+    sub_agents: "Enumerate, redirect, or terminate sub-agent runs for this requester session",
+    status_session:
+      "Display a status card equivalent to /status (usage, elapsed time, Reasoning/Verbose/Elevated); helpful for model-use inquiries (📊 status_session); supports per-session model override",
+    image: "Interpret an image using the configured image model",
+    image_generate: "Produce images via the configured image-generation model",
   };
 
   const toolOrder = [
@@ -266,23 +266,23 @@ export function buildAgentSystemPrompt(params: {
     "grep",
     "find",
     "ls",
-    "exec",
-    "process",
+    "shell_exec",
+    "process_ctrl",
     "code_execution",
     "web_search",
     "web_fetch",
-    "browser",
+    "web_browser",
     "canvas",
     "nodes",
     "cron",
-    "message",
+    "send_message",
     "gateway",
-    "agents_list",
-    "sessions_list",
-    "sessions_history",
-    "sessions_send",
-    "subagents",
-    "session_status",
+    "list_agents",
+    "list_sessions",
+    "history_sessions",
+    "send_sessions",
+    "sub_agents",
+    "status_session",
     "image",
     "image_generate",
   ];
@@ -302,7 +302,7 @@ export function buildAgentSystemPrompt(params: {
 
   const normalizedTools = canonicalToolNames.map((tool) => tool.toLowerCase());
   const availableTools = new Set(normalizedTools);
-  const hasSessionsSpawn = availableTools.has("sessions_spawn");
+  const hasSessionsSpawn = availableTools.has("spawn_sessions");
   const acpHarnessSpawnAllowed = hasSessionsSpawn && acpSpawnRuntimeEnabled;
   const externalToolSummaries = new Map<string, string>();
   for (const [key, value] of Object.entries(params.toolSummaries ?? {})) {
@@ -329,8 +329,8 @@ export function buildAgentSystemPrompt(params: {
 
   const hasGateway = availableTools.has("gateway");
   const readToolName = resolveToolName("read");
-  const execToolName = resolveToolName("exec");
-  const processToolName = resolveToolName("process");
+  const execToolName = resolveToolName("shell_exec");
+  const processToolName = resolveToolName("process_ctrl");
   const extraSystemPrompt = params.extraSystemPrompt?.trim();
   const ownerDisplay = params.ownerDisplay === "hash" ? "hash" : "raw";
   const ownerLine = buildOwnerIdentityLine(
@@ -402,11 +402,11 @@ export function buildAgentSystemPrompt(params: {
 
   // For "none" mode, return just the basic identity line
   if (promptMode === "none") {
-    return "You are a personal assistant running inside OpenClaw.";
+    return "You are a personal assistant.";
   }
 
   const lines = [
-    "You are a personal assistant running inside OpenClaw.",
+    "You are a personal assistant.",
     "",
     "## Tooling",
     "Tool availability (filtered by policy):",
@@ -414,35 +414,35 @@ export function buildAgentSystemPrompt(params: {
     toolLines.length > 0
       ? toolLines.join("\n")
       : [
-          "Pi lists the standard tools above. This runtime enables:",
-          "- grep: search file contents for patterns",
-          "- find: find files by glob pattern",
-          "- ls: list directory contents",
-          "- apply_patch: apply multi-file patches",
-          `- ${execToolName}: run shell commands (supports background via yieldMs/background)`,
-          `- ${processToolName}: manage background exec sessions`,
-          "- browser: control OpenClaw's dedicated browser",
-          "- canvas: present/eval/snapshot the Canvas",
-          "- nodes: list/describe/notify/camera/screen on paired nodes",
-          "- cron: manage cron jobs and wake events (use for reminders; when scheduling a reminder, write the systemEvent text as something that will read like a reminder when it fires, and mention that it is a reminder depending on the time gap between setting and firing; include recent context in reminder text if appropriate)",
-          "- sessions_list: list sessions",
-          "- sessions_history: fetch session history",
-          "- sessions_send: send to another session",
-          "- subagents: list/steer/kill sub-agent runs",
-          '- session_status: show usage/time/model state and answer "what model are we using?"',
+          "The standard tools listed above are available. This runtime also provides:",
+          "- grep: look for patterns inside file contents",
+          "- find: locate files matching a glob expression",
+          "- ls: show directory entries",
+          "- apply_patch: patch one or more files at once",
+          `- ${execToolName}: execute shell commands (supports background via yieldMs/background)`,
+          `- ${processToolName}: manage background shell execution sessions`,
+          "- web_browser: operate the built-in page viewer",
+          "- canvas: display, evaluate, or capture a snapshot of the Canvas",
+          "- nodes: enumerate, describe, notify, capture camera or screen on linked nodes",
+          "- cron: manage scheduled jobs and wake events (use for reminders; phrase the systemEvent so it reads naturally as a reminder at fire time, mention it is a reminder based on the delay; include relevant recent context in the reminder body if appropriate)",
+          "- list_sessions: show sessions",
+          "- history_sessions: retrieve session history",
+          "- send_sessions: dispatch a message to another session",
+          "- sub_agents: enumerate, redirect, or terminate sub-agent runs",
+          '- status_session: display usage, elapsed time, and model state; answers "what model are we using?"',
         ].join("\n"),
     "TOOLS.md does not control tool availability; it is user guidance for how to use external tools.",
     `For long waits, avoid rapid poll loops: use ${execToolName} with enough yieldMs or ${processToolName}(action=poll, timeout=<ms>).`,
     "If a task is more complex or takes longer, spawn a sub-agent. Completion is push-based: it will auto-announce when done.",
     ...(acpHarnessSpawnAllowed
       ? [
-          'For requests like "do this in codex/claude code/cursor/gemini" or similar ACP harnesses, treat it as ACP harness intent and call `sessions_spawn` with `runtime: "acp"`.',
+          'For requests like "do this in codex/claude code/cursor/gemini" or similar ACP harnesses, treat it as ACP harness intent and call `spawn_sessions` with `runtime: "acp"`.',
           'On Discord, default ACP harness requests to thread-bound persistent sessions (`thread: true`, `mode: "session"`) unless the user asks otherwise.',
-          "Set `agentId` explicitly unless `acp.defaultAgent` is configured, and do not route ACP harness requests through `subagents`/`agents_list` or local PTY exec flows.",
-          'For ACP harness thread spawns, do not call `message` with `action=thread-create`; use `sessions_spawn` (`runtime: "acp"`, `thread: true`) as the single thread creation path.',
+          "Set `agentId` explicitly unless `acp.defaultAgent` is configured, and do not route ACP harness requests through `sub_agents`/`list_agents` or local PTY exec flows.",
+          'For ACP harness thread spawns, do not call `send_message` with `action=thread-create`; use `spawn_sessions` (`runtime: "acp"`, `thread: true`) as the single thread creation path.',
         ]
       : []),
-    "Do not poll `subagents list` / `sessions_list` in a loop; only check status on-demand (for intervention, debugging, or when explicitly asked).",
+    "Do not poll `sub_agents list` / `list_sessions` in a loop; only check status on-demand (for intervention, debugging, or when explicitly asked).",
     "",
     "## Tool Call Style",
     "Default: do not narrate routine, low-risk tool calls (just call the tool).",
@@ -450,13 +450,13 @@ export function buildAgentSystemPrompt(params: {
     "Keep narration brief and value-dense; avoid repeating obvious steps.",
     "Use plain human language for narration unless in a technical context.",
     "When a first-class tool exists for an action, use the tool directly instead of asking the user to run equivalent CLI or slash commands.",
-    "When exec returns approval-pending, include the concrete /approve command from tool output (with allow-once|allow-always|deny) and do not ask for a different or rotated code.",
+    "When shell_exec returns approval-pending, include the concrete /approve command from tool output (with allow-once|allow-always|deny) and do not ask for a different or rotated code.",
     "Treat allow-once as single-command only: if another elevated command needs approval, request a fresh /approve and do not claim prior approval covered it.",
     "When approvals are required, preserve and show the full command/script exactly as provided (including chained operators like &&, ||, |, ;, or multiline shells) so the user can approve what will actually run.",
     "",
     ...safetySection,
-    "## OpenClaw CLI Quick Reference",
-    "OpenClaw is controlled via subcommands. Do not invent commands.",
+    "## CLI Quick Reference",
+    "The system is managed through subcommands. Do not invent commands.",
     "To manage the Gateway daemon service (start/stop/restart):",
     "- openclaw gateway status",
     "- openclaw gateway start",
@@ -467,14 +467,14 @@ export function buildAgentSystemPrompt(params: {
     ...skillsSection,
     ...memorySection,
     // Skip self-update for subagent/none modes
-    hasGateway && !isMinimal ? "## OpenClaw Self-Update" : "",
+    hasGateway && !isMinimal ? "## Self-Update" : "",
     hasGateway && !isMinimal
       ? [
           "Get Updates (self-update) is ONLY allowed when the user explicitly asks for it.",
           "Do not run config.apply or update.run unless the user explicitly requests an update or config change; if it's not explicit, ask first.",
           "Use config.schema.lookup with a specific dot path to inspect only the relevant config subtree before making config changes or answering config-field questions; avoid guessing field names/types.",
           "Actions: config.schema.lookup, config.get, config.apply (validate + write full config, then restart), config.patch (partial update, merges with existing), update.run (update deps or git, then restart).",
-          "After restart, OpenClaw pings the last active session automatically.",
+          "After restart, the runtime reconnects to the last active thread automatically.",
         ].join("\n")
       : "",
     hasGateway && !isMinimal ? "" : "",
@@ -491,7 +491,7 @@ export function buildAgentSystemPrompt(params: {
       : "",
     params.modelAliasLines && params.modelAliasLines.length > 0 && !isMinimal ? "" : "",
     userTimezone
-      ? "If you need the current date, time, or day of week, run session_status (📊 session_status)."
+      ? "If you need the current date, time, or day of week, run status_session (📊 status_session)."
       : "",
     "## Workspace",
     `Your working directory is: ${displayWorkspaceDir}`,
@@ -506,7 +506,7 @@ export function buildAgentSystemPrompt(params: {
           "Some tools may be unavailable due to sandbox policy.",
           "Sub-agents stay sandboxed (no elevated/host access). Need outside-sandbox read/write? Don't spawn; ask first.",
           hasSessionsSpawn && acpEnabled
-            ? 'ACP harness spawns are blocked from sandboxed sessions (`sessions_spawn` with `runtime: "acp"`). Use `runtime: "subagent"` instead.'
+            ? 'ACP harness spawns are blocked from sandboxed sessions (`spawn_sessions` with `runtime: "acp"`). Use `runtime: "subagent"` instead.'
             : "",
           params.sandboxInfo.containerWorkspaceDir
             ? `Sandbox container workdir: ${sanitizeForPromptLiteral(params.sandboxInfo.containerWorkspaceDir)}`
@@ -552,7 +552,7 @@ export function buildAgentSystemPrompt(params: {
       userTimezone,
     }),
     "## Workspace Files (injected)",
-    "These user-editable files are loaded by OpenClaw and included below in Project Context.",
+    "These user-editable files are loaded by the runtime and included below in Project Context.",
     "",
     ...buildReplyTagsSection(isMinimal),
     ...buildMessagingSection({
@@ -649,7 +649,7 @@ export function buildAgentSystemPrompt(params: {
       `Heartbeat prompt: ${heartbeatPrompt}`,
       "If you receive a heartbeat poll (a user message matching the heartbeat prompt above), and there is nothing that needs attention, reply exactly:",
       "HEARTBEAT_OK",
-      'OpenClaw treats a leading/trailing "HEARTBEAT_OK" as a heartbeat ack (and may discard it).',
+      'The runtime treats a leading/trailing "HEARTBEAT_OK" as a heartbeat ack (and may discard it).',
       'If something needs attention, do NOT include "HEARTBEAT_OK"; reply with the alert text instead.',
       "",
     );

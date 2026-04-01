@@ -5,8 +5,8 @@ import type { OpenClawPluginApi } from "./runtime-api.js";
 const runtimeApiMocks = vi.hoisted(() => ({
   createBrowserPluginService: vi.fn(() => ({ id: "browser-control", start: vi.fn() })),
   createBrowserTool: vi.fn(() => ({
-    name: "browser",
-    description: "browser",
+    name: "web_browser",
+    description: "web_browser",
     parameters: { type: "object", properties: {} },
     execute: vi.fn(),
   })),

@@ -96,7 +96,7 @@ export async function runSessionsSendA2AFlow(params: {
           sourceSessionKey: nextSessionKey,
           sourceChannel:
             nextSessionKey === params.requesterSessionKey ? params.requesterChannel : targetChannel,
-          sourceTool: "sessions_send",
+          sourceTool: "send_sessions",
         });
         if (!replyText || isReplySkip(replyText)) {
           break;
@@ -126,7 +126,7 @@ export async function runSessionsSendA2AFlow(params: {
       lane: AGENT_LANE_NESTED,
       sourceSessionKey: params.requesterSessionKey,
       sourceChannel: params.requesterChannel,
-      sourceTool: "sessions_send",
+      sourceTool: "send_sessions",
     });
     if (announceTarget && announceReply && announceReply.trim() && !isAnnounceSkip(announceReply)) {
       try {

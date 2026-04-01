@@ -8,9 +8,9 @@
  */
 export const DEFAULT_GATEWAY_HTTP_TOOL_DENY = [
   // Session orchestration — spawning agents remotely is RCE
-  "sessions_spawn",
+  "spawn_sessions",
   // Cross-session injection — message injection across sessions
-  "sessions_send",
+  "send_sessions",
   // Persistent automation control plane — can create/update/remove scheduled runs
   "cron",
   // Gateway control plane — prevents gateway reconfiguration via HTTP
@@ -24,11 +24,11 @@ export const DEFAULT_GATEWAY_HTTP_TOOL_DENY = [
  * ACP is an automation surface; we never want "silent yes" for mutating/execution tools.
  */
 export const DANGEROUS_ACP_TOOL_NAMES = [
-  "exec",
+  "shell_exec",
   "spawn",
   "shell",
-  "sessions_spawn",
-  "sessions_send",
+  "spawn_sessions",
+  "send_sessions",
   "gateway",
   "fs_write",
   "fs_delete",

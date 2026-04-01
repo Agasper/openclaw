@@ -396,7 +396,7 @@ export function resolveToolVerbAndDetail(params: {
   const verb = normalizeVerb(actionSpec?.label ?? params.action ?? fallbackVerb);
 
   let detail: string | undefined;
-  if (params.toolKey === "exec") {
+  if (params.toolKey === "shell_exec") {
     detail = resolveExecDetail(params.args);
   }
   if (!detail && params.toolKey === "read") {

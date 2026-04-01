@@ -148,7 +148,7 @@ function isKnownPollToolCall(toolName: string, params: unknown): boolean {
   if (toolName === "command_status") {
     return true;
   }
-  if (toolName !== "process" || !isPlainObject(params)) {
+  if (toolName !== "process_ctrl" || !isPlainObject(params)) {
     return false;
   }
   const action = params.action;
@@ -197,7 +197,11 @@ function hashToolOutcome(
 
   const details = isPlainObject(result.details) ? result.details : {};
   const text = extractTextContent(result);
-  if (isKnownPollToolCall(toolName, params) && toolName === "process" && isPlainObject(params)) {
+  if (
+    isKnownPollToolCall(toolName, params) &&
+    toolName === "process_ctrl" &&
+    isPlainObject(params)
+  ) {
     const action = params.action;
     if (action === "poll") {
       return digestStable({

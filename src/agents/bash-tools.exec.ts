@@ -226,10 +226,10 @@ export function createExecTool(
     (parsedAgentSession ? resolveAgentIdFromSessionKey(defaults?.sessionKey) : undefined);
 
   return {
-    name: "exec",
-    label: "exec",
+    name: "shell_exec",
+    label: "shell_exec",
     description:
-      "Execute shell commands with background continuation. Use yieldMs/background to continue later via process tool. Use pty=true for TTY-required commands (terminal UIs, coding agents).",
+      "Run shell commands with optional background continuation. Pass yieldMs/background to resume output later through the process_ctrl tool. Set pty=true when the command needs a full terminal (interactive UIs, coding agents).",
     parameters: execSchema,
     execute: async (_toolCallId, args, signal, onUpdate) => {
       const params = args as {

@@ -12,7 +12,7 @@ export function getAvailableCommands(): AvailableCommand[] {
     },
     { name: "whoami", description: "Show sender id (alias: /id)." },
     { name: "id", description: "Alias for /whoami." },
-    { name: "subagents", description: "List or manage sub-agents." },
+    { name: "sub_agents", description: "List or manage sub-agents." },
     { name: "config", description: "Read or write config (owner-only)." },
     { name: "debug", description: "Set runtime-only overrides (owner-only)." },
     { name: "usage", description: "Toggle usage footer (off|tokens|full)." },

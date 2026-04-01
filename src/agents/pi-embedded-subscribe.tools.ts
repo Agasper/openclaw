@@ -133,28 +133,28 @@ export function extractToolResultText(result: unknown): string | undefined {
 // Core tool names that are allowed to emit local MEDIA: paths.
 // Plugin/MCP tools are intentionally excluded to prevent untrusted file reads.
 const TRUSTED_TOOL_RESULT_MEDIA = new Set([
-  "agents_list",
+  "list_agents",
   "apply_patch",
-  "browser",
+  "web_browser",
   "canvas",
   "cron",
   "edit",
-  "exec",
+  "shell_exec",
   "gateway",
   "image",
   "image_generate",
-  "memory_get",
-  "memory_search",
-  "message",
+  "get_memory",
+  "search_memory",
+  "send_message",
   "nodes",
-  "process",
+  "process_ctrl",
   "read",
-  "session_status",
-  "sessions_history",
-  "sessions_list",
-  "sessions_send",
-  "sessions_spawn",
-  "subagents",
+  "status_session",
+  "history_sessions",
+  "list_sessions",
+  "send_sessions",
+  "spawn_sessions",
+  "sub_agents",
   "tts",
   "web_fetch",
   "web_search",
@@ -375,7 +375,7 @@ export function extractMessagingToolSend(
   const action = typeof args.action === "string" ? args.action.trim() : "";
   const accountIdRaw = typeof args.accountId === "string" ? args.accountId.trim() : undefined;
   const accountId = accountIdRaw ? accountIdRaw : undefined;
-  if (toolName === "message") {
+  if (toolName === "send_message") {
     if (action !== "send" && action !== "thread-reply") {
       return undefined;
     }

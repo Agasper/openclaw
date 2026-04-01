@@ -81,7 +81,7 @@ function formatMetaForDisplay(
   markdown?: boolean,
 ): string {
   const normalized = (toolName ?? "").trim().toLowerCase();
-  if (normalized === "exec" || normalized === "bash") {
+  if (normalized === "shell_exec" || normalized === "bash") {
     const { flags, body } = splitExecFlags(meta);
     if (flags.length > 0) {
       if (!body) {

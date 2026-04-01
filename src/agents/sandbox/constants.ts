@@ -11,25 +11,25 @@ export const DEFAULT_SANDBOX_IDLE_HOURS = 24;
 export const DEFAULT_SANDBOX_MAX_AGE_DAYS = 7;
 
 export const DEFAULT_TOOL_ALLOW = [
-  "exec",
-  "process",
+  "shell_exec",
+  "process_ctrl",
   "read",
   "write",
   "edit",
   "apply_patch",
   "image",
-  "sessions_list",
-  "sessions_history",
-  "sessions_send",
-  "sessions_spawn",
+  "list_sessions",
+  "history_sessions",
+  "send_sessions",
+  "spawn_sessions",
   "sessions_yield",
-  "subagents",
-  "session_status",
+  "sub_agents",
+  "status_session",
 ] as const;
 
 // Provider docking: keep sandbox policy aligned with provider tool names.
 export const DEFAULT_TOOL_DENY = [
-  "browser",
+  "web_browser",
   "canvas",
   "nodes",
   "cron",

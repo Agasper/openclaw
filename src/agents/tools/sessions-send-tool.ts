@@ -96,9 +96,8 @@ export function createSessionsSendTool(opts?: {
 }): AnyAgentTool {
   return {
     label: "Session Send",
-    name: "sessions_send",
-    description:
-      "Send a message into another session. Use sessionKey or label to identify the target.",
+    name: "send_sessions",
+    description: "Deliver a message to a different session, identified by its sessionKey or label.",
     parameters: SessionsSendToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;
@@ -282,7 +281,7 @@ export function createSessionsSendTool(opts?: {
           kind: "inter_session",
           sourceSessionKey: opts?.agentSessionKey,
           sourceChannel: opts?.agentChannel,
-          sourceTool: "sessions_send",
+          sourceTool: "send_sessions",
         },
       };
       const requesterSessionKey = opts?.agentSessionKey;

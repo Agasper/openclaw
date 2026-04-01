@@ -102,7 +102,7 @@ function sanitizeToolCallBlock(block: RawToolCallBlock): RawToolCallBlock {
   const normalizedName = hasTrimmedName ? trimmedName : undefined;
   const nameChanged = hasTrimmedName && rawName !== trimmedName;
 
-  const isSessionsSpawn = normalizedName?.toLowerCase() === "sessions_spawn";
+  const isSessionsSpawn = normalizedName?.toLowerCase() === "spawn_sessions";
 
   if (!isSessionsSpawn) {
     if (!nameChanged) {
@@ -269,7 +269,7 @@ export function repairToolCallInputs(
             typeof (block as { name?: unknown }).name === "string"
               ? (block as { name: string }).name.trim()
               : undefined;
-          if (blockName?.toLowerCase() === "sessions_spawn") {
+          if (blockName?.toLowerCase() === "spawn_sessions") {
             const sanitized = sanitizeToolCallBlock(block);
             if (sanitized !== block) {
               changed = true;

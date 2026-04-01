@@ -4,8 +4,8 @@ export const buildPromptSection: MemoryPromptSectionBuilder = ({
   availableTools,
   citationsMode,
 }) => {
-  const hasMemorySearch = availableTools.has("memory_search");
-  const hasMemoryGet = availableTools.has("memory_get");
+  const hasMemorySearch = availableTools.has("search_memory");
+  const hasMemoryGet = availableTools.has("get_memory");
 
   if (!hasMemorySearch && !hasMemoryGet) {
     return [];
@@ -14,13 +14,13 @@ export const buildPromptSection: MemoryPromptSectionBuilder = ({
   let toolGuidance: string;
   if (hasMemorySearch && hasMemoryGet) {
     toolGuidance =
-      "Before answering anything about prior work, decisions, dates, people, preferences, or todos: run memory_search on MEMORY.md + memory/*.md; then use memory_get to pull only the needed lines. If low confidence after search, say you checked.";
+      "Before answering anything about prior work, decisions, dates, people, preferences, or todos: run search_memory on MEMORY.md + memory/*.md; then use get_memory to pull only the needed lines. If low confidence after search, say you checked.";
   } else if (hasMemorySearch) {
     toolGuidance =
-      "Before answering anything about prior work, decisions, dates, people, preferences, or todos: run memory_search on MEMORY.md + memory/*.md and answer from the matching results. If low confidence after search, say you checked.";
+      "Before answering anything about prior work, decisions, dates, people, preferences, or todos: run search_memory on MEMORY.md + memory/*.md and answer from the matching results. If low confidence after search, say you checked.";
   } else {
     toolGuidance =
-      "Before answering anything about prior work, decisions, dates, people, preferences, or todos that already point to a specific memory file or note: run memory_get to pull only the needed lines. If low confidence after reading them, say you checked.";
+      "Before answering anything about prior work, decisions, dates, people, preferences, or todos that already point to a specific memory file or note: run get_memory to pull only the needed lines. If low confidence after reading them, say you checked.";
   }
 
   const lines = ["## Memory Recall", toolGuidance];

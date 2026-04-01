@@ -2,16 +2,16 @@ const MUTATING_TOOL_NAMES = new Set([
   "write",
   "edit",
   "apply_patch",
-  "exec",
+  "shell_exec",
   "bash",
-  "process",
-  "message",
-  "sessions_send",
+  "process_ctrl",
+  "send_message",
+  "send_sessions",
   "cron",
   "gateway",
   "canvas",
   "nodes",
-  "session_status",
+  "status_session",
 ]);
 
 const READ_ONLY_ACTIONS = new Set([
@@ -121,19 +121,19 @@ export function isMutatingToolCall(toolName: string, args: unknown): boolean {
     case "write":
     case "edit":
     case "apply_patch":
-    case "exec":
+    case "shell_exec":
     case "bash":
-    case "sessions_send":
+    case "send_sessions":
       return true;
-    case "process":
+    case "process_ctrl":
       return action != null && PROCESS_MUTATING_ACTIONS.has(action);
-    case "message":
+    case "send_message":
       return (
         (action != null && MESSAGE_MUTATING_ACTIONS.has(action)) ||
         typeof record?.content === "string" ||
         typeof record?.message === "string"
       );
-    case "session_status":
+    case "status_session":
       return typeof record?.model === "string" && record.model.trim().length > 0;
     default: {
       if (normalized === "cron" || normalized === "gateway" || normalized === "canvas") {

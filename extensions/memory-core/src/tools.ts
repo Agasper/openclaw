@@ -27,10 +27,10 @@ export function createMemorySearchTool(options: {
 }): AnyAgentTool | null {
   return createMemoryTool({
     options,
-    label: "Memory Search",
-    name: "memory_search",
+    label: "Search Memory",
+    name: "search_memory",
     description:
-      "Mandatory recall step: semantically search MEMORY.md + memory/*.md (and optional session transcripts) before answering questions about prior work, decisions, dates, people, preferences, or todos; returns top snippets with path + lines. If response has disabled=true, memory retrieval is unavailable and should be surfaced to the user.",
+      "Required recall step: perform a semantic search across MEMORY.md and memory/*.md (plus optional session transcripts) before responding to questions about past work, decisions, dates, contacts, preferences, or tasks; returns the best matching snippets with file path and line numbers. When the response includes disabled=true, memory lookup is unavailable and that should be communicated to the user.",
     parameters: MemorySearchSchema,
     execute:
       ({ cfg, agentId }) =>
@@ -84,10 +84,10 @@ export function createMemoryGetTool(options: {
 }): AnyAgentTool | null {
   return createMemoryTool({
     options,
-    label: "Memory Get",
-    name: "memory_get",
+    label: "Get Memory",
+    name: "get_memory",
     description:
-      "Safe snippet read from MEMORY.md or memory/*.md with optional from/lines; use after memory_search to pull only the needed lines and keep context small.",
+      "Read a snippet from MEMORY.md or memory/*.md with optional from/lines offset; call after search_memory to fetch only the relevant lines and minimize context usage.",
     parameters: MemoryGetSchema,
     execute:
       ({ cfg, agentId }) =>

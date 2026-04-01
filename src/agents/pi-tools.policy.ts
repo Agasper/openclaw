@@ -24,17 +24,17 @@ import { normalizeToolName } from "./tool-policy.js";
 const SUBAGENT_TOOL_DENY_ALWAYS = [
   // System admin - dangerous from subagent
   "gateway",
-  "agents_list",
+  "list_agents",
   // Interactive setup - not a task
   "whatsapp_login",
   // Status/scheduling - main agent coordinates
-  "session_status",
+  "status_session",
   "cron",
   // Memory - pass relevant info in spawn prompt instead
-  "memory_search",
-  "memory_get",
+  "search_memory",
+  "get_memory",
   // Direct session sends - subagents communicate through announce chain
-  "sessions_send",
+  "send_sessions",
 ];
 
 /**
@@ -42,10 +42,10 @@ const SUBAGENT_TOOL_DENY_ALWAYS = [
  * These are tools that only make sense for orchestrator sub-agents that can spawn children.
  */
 const SUBAGENT_TOOL_DENY_LEAF = [
-  "subagents",
-  "sessions_list",
-  "sessions_history",
-  "sessions_spawn",
+  "sub_agents",
+  "list_sessions",
+  "history_sessions",
+  "spawn_sessions",
 ];
 
 /**
@@ -216,8 +216,8 @@ function resolveImplicitProfileAlsoAllow(params: {
     hasExplicitToolSection(params.agentTools?.exec) ||
     hasExplicitToolSection(params.globalTools?.exec)
   ) {
-    implicit.add("exec");
-    implicit.add("process");
+    implicit.add("shell_exec");
+    implicit.add("process_ctrl");
   }
   if (
     hasExplicitToolSection(params.agentTools?.fs) ||

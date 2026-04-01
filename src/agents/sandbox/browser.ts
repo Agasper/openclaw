@@ -139,7 +139,7 @@ export async function ensureSandboxBrowser(params: {
   if (!params.cfg.browser.enabled) {
     return null;
   }
-  if (!isToolAllowed(params.cfg.tools, "browser")) {
+  if (!isToolAllowed(params.cfg.tools, "web_browser")) {
     return null;
   }
 

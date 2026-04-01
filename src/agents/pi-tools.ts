@@ -270,7 +270,7 @@ export function createOpenClawCodingTools(options?: {
   /** Callback invoked when sessions_yield tool is called. */
   onYield?: (message: string) => Promise<void> | void;
 }): AnyAgentTool[] {
-  const execToolName = "exec";
+  const execToolName = "shell_exec";
   const sandbox = options?.sandbox?.enabled ? options.sandbox : undefined;
   const isMemoryFlushRun = options?.trigger === "memory";
   if (isMemoryFlushRun && !options?.memoryFlushWritePath) {
@@ -328,7 +328,7 @@ export function createOpenClawCodingTools(options?: {
     isSubagentSessionKey(options?.sessionKey) && options?.sessionKey
       ? resolveSubagentToolPolicyForSession(options.config, options.sessionKey)
       : undefined;
-  const allowBackground = isToolAllowedByPolicies("process", [
+  const allowBackground = isToolAllowedByPolicies("process_ctrl", [
     profilePolicyWithAlsoAllow,
     providerProfilePolicyWithAlsoAllow,
     globalPolicy,

@@ -38,7 +38,7 @@ import {
 import { getHeader } from "./http-utils.js";
 
 const DEFAULT_BODY_BYTES = 2 * 1024 * 1024;
-const MEMORY_TOOL_NAMES = new Set(["memory_search", "memory_get"]);
+const MEMORY_TOOL_NAMES = new Set(["search_memory", "get_memory"]);
 
 type ToolsInvokeBody = {
   tool?: unknown;

@@ -77,8 +77,8 @@ describe("plugin registration", () => {
     expect(registerMemoryRuntime).toHaveBeenCalledWith(memoryRuntime);
     expect(registerMemoryEmbeddingProvider).toHaveBeenCalledTimes(6);
     expect(registerTool).toHaveBeenCalledTimes(2);
-    expect(registerTool.mock.calls[0]?.[1]).toEqual({ names: ["memory_search"] });
-    expect(registerTool.mock.calls[1]?.[1]).toEqual({ names: ["memory_get"] });
+    expect(registerTool.mock.calls[0]?.[1]).toEqual({ names: ["search_memory"] });
+    expect(registerTool.mock.calls[1]?.[1]).toEqual({ names: ["get_memory"] });
     expect(registerCli).toHaveBeenCalledWith(expect.any(Function), {
       descriptors: [
         {

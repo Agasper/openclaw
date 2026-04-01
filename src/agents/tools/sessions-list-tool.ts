@@ -39,9 +39,9 @@ export function createSessionsListTool(opts?: {
   callGateway?: GatewayCaller;
 }): AnyAgentTool {
   return {
-    label: "Sessions",
-    name: "sessions_list",
-    description: "List sessions with optional filters and last messages.",
+    label: "List Sessions",
+    name: "list_sessions",
+    description: "Retrieve sessions, optionally filtered, including their most recent messages.",
     parameters: SessionsListToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;

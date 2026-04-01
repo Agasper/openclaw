@@ -28,8 +28,8 @@ export type ProviderAttributionPolicy = {
 
 export type ProviderAttributionIdentity = Pick<ProviderAttributionPolicy, "product" | "version">;
 
-const OPENCLAW_ATTRIBUTION_PRODUCT = "OpenClaw";
-const OPENCLAW_ATTRIBUTION_ORIGINATOR = "openclaw";
+const OPENCLAW_ATTRIBUTION_PRODUCT = "Assistant";
+const OPENCLAW_ATTRIBUTION_ORIGINATOR = "assistant";
 
 export function resolveProviderAttributionIdentity(
   env: RuntimeVersionEnv = process.env as RuntimeVersionEnv,

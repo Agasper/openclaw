@@ -78,10 +78,10 @@ export function createSessionsSpawnTool(
   } & SpawnedToolContext,
 ): AnyAgentTool {
   return {
-    label: "Sessions",
-    name: "sessions_spawn",
+    label: "Spawn Session",
+    name: "spawn_sessions",
     description:
-      'Spawn an isolated session (runtime="subagent" or runtime="acp"). mode="run" is one-shot and mode="session" is persistent/thread-bound. Subagents inherit the parent workspace directory automatically.',
+      'Create an isolated session (runtime="subagent" or runtime="acp"). mode="run" executes once; mode="session" persists across turns. Subagent sessions automatically inherit the parent workspace directory.',
     parameters: SessionsSpawnToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;
@@ -90,7 +90,7 @@ export function createSessionsSpawnTool(
       );
       if (unsupportedParam) {
         throw new ToolInputError(
-          `sessions_spawn does not support "${unsupportedParam}". Use "message" or "sessions_send" for channel delivery.`,
+          `spawn_sessions does not support "${unsupportedParam}". Use "send_message" or "send_sessions" for channel delivery.`,
         );
       }
       const task = readStringParam(params, "task", { required: true });

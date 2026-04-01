@@ -295,7 +295,7 @@ export function buildBuiltinChatCommands(): ChatCommandDefinition[] {
     }),
     defineChatCommand({
       key: "subagents",
-      nativeName: "subagents",
+      nativeName: "sub_agents",
       description: "List, kill, log, spawn, or steer subagent runs for this session.",
       textAlias: "/subagents",
       category: "management",

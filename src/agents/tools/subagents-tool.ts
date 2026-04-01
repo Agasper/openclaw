@@ -30,10 +30,10 @@ const SubagentsToolSchema = Type.Object({
 
 export function createSubagentsTool(opts?: { agentSessionKey?: string }): AnyAgentTool {
   return {
-    label: "Subagents",
-    name: "subagents",
+    label: "Sub-Agents",
+    name: "sub_agents",
     description:
-      "List, kill, or steer spawned sub-agents for this requester session. Use this for sub-agent orchestration.",
+      "Enumerate, terminate, or direct spawned sub-agents belonging to this requester session. Useful for sub-agent lifecycle management.",
     parameters: SubagentsToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;

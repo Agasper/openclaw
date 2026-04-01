@@ -147,10 +147,10 @@ export function createProcessTool(
   };
 
   return {
-    name: "process",
-    label: "process",
+    name: "process_ctrl",
+    label: "process_ctrl",
     description:
-      "Manage running exec sessions: list, poll, log, write, send-keys, submit, paste, kill.",
+      "Control active shell_exec sessions: enumerate, poll output, read logs, write stdin, send keystrokes, submit input, paste text, or terminate.",
     parameters: processSchema,
     execute: async (_toolCallId, args, _signal, _onUpdate): Promise<AgentToolResult<unknown>> => {
       const params = args as {
