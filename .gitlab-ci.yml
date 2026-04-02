@@ -18,7 +18,7 @@ Build openclaw package:
   variables:
     DOCKER_FILE: Dockerfile.ci
   after_script:
-    - docker tag "${DOCKER_REPO}/${DOCKER_TAG}" "${DOCKER_REPO}/latest"
-    - docker push "${DOCKER_REPO}/latest"
+    - docker tag "docker-hosted.gearwap.ru/${DOCKER_IMAGE}:${DOCKER_TAG}" "docker-hosted.gearwap.ru/${DOCKER_IMAGE}:latest"
+    - docker push "docker-hosted.gearwap.ru/${DOCKER_IMAGE}:latest"
   rules:
     - if: '$CI_COMMIT_BRANCH == "custom"'
