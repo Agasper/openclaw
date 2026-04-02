@@ -1,0 +1,21 @@
+include:
+  - project: 'devops/cicd/docker'
+    ref: main
+    file: '.build_push_dind.yml'
+
+stages:
+  - build
+
+variables:
+  DOCKER_IMAGE: $CI_PROJECT_PATH
+  DOCKER_TAG: $CI_PIPELINE_IID
+
+Build openclaw package:
+  stage: build
+  extends: .build_push_dind
+  tags:
+    - docker_socket
+  variables:
+    DOCKER_FILE: Dockerfile.ci
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "custom"'
