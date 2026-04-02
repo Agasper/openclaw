@@ -17,5 +17,8 @@ Build openclaw package:
     - docker_socket
   variables:
     DOCKER_FILE: Dockerfile.ci
+  after_script:
+    - docker tag "${DOCKER_REPO}/${DOCKER_TAG}" "${DOCKER_REPO}/latest"
+    - docker push "${DOCKER_REPO}/latest"
   rules:
     - if: '$CI_COMMIT_BRANCH == "custom"'
