@@ -1,0 +1,96 @@
+diff --git a/dist/providers/anthropic.js b/dist/providers/anthropic.js
+index d4fc29b8c97264ae51b212bdf69b29f7e8001ad1..72267cf1a7dce1faad77898b07b1a689eabddada 100644
+--- a/dist/providers/anthropic.js
++++ b/dist/providers/anthropic.js
+@@ -341,13 +341,90 @@ export const streamAnthropic = (model, context, options) => {
+             for (const block of output.content)
+                 delete block.index;
+             output.stopReason = options?.signal?.aborted ? "aborted" : "error";
+-            output.errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
++            let errorMsg = error instanceof Error ? error.message : JSON.stringify(error);
++            if (error?.status === 429 && error?.headers) {
++                const resetInfo = extractRateLimitResetInfo(error.headers);
++                if (resetInfo) {
++                    errorMsg += " (" + resetInfo + ")";
++                }
++            }
++            output.errorMessage = errorMsg;
+             stream.push({ type: "error", reason: output.stopReason, error: output });
+             stream.end();
+         }
+     })();
+     return stream;
+ };
++/**
++ * Extract rate limit reset information from Anthropic API response headers.
++ * Supports both unified (OAuth/subscription) and standard (API key) headers.
++ */
++function extractRateLimitResetInfo(headers) {
++    const get = (name) => {
++        if (typeof headers.get === "function") return headers.get(name);
++        if (headers && typeof headers === "object") return headers[name];
++        return undefined;
++    };
++    const parts = [];
++    // Unified headers (OAuth/subscription accounts)
++    const unified5hReset = get("anthropic-ratelimit-unified-5h-reset");
++    const unified5hUtil = get("anthropic-ratelimit-unified-5h-utilization");
++    const unified7dUtil = get("anthropic-ratelimit-unified-7d-utilization");
++    if (unified5hReset) {
++        const resetDate = new Date(unified5hReset);
++        const now = new Date();
++        const diffMs = resetDate.getTime() - now.getTime();
++        if (diffMs > 0) {
++            const diffMin = Math.ceil(diffMs / 60000);
++            if (diffMin >= 60) {
++                const hours = Math.floor(diffMin / 60);
++                const mins = diffMin % 60;
++                parts.push("Limit resets in " + hours + "h" + (mins > 0 ? " " + mins + "m" : ""));
++            }
++            else {
++                parts.push("Limit resets in " + diffMin + " minutes");
++            }
++        }
++        else {
++            parts.push("Limit resets momentarily");
++        }
++        const utilParts = [];
++        if (unified5hUtil) utilParts.push("5h: " + Math.round(parseFloat(unified5hUtil) * 100) + "%");
++        if (unified7dUtil) utilParts.push("7d: " + Math.round(parseFloat(unified7dUtil) * 100) + "%");
++        if (utilParts.length > 0) parts.push(utilParts.join(", "));
++    }
++    // Standard headers (API key accounts)
++    if (parts.length === 0) {
++        const retryAfter = get("retry-after");
++        const tokensReset = get("anthropic-ratelimit-tokens-reset") || get("anthropic-ratelimit-requests-reset");
++        if (tokensReset) {
++            const resetDate = new Date(tokensReset);
++            const now = new Date();
++            const diffMs = resetDate.getTime() - now.getTime();
++            if (diffMs > 0) {
++                const diffSec = Math.ceil(diffMs / 1000);
++                if (diffSec >= 60) {
++                    parts.push("Limit resets in " + Math.ceil(diffSec / 60) + " minutes");
++                }
++                else {
++                    parts.push("Limit resets in " + diffSec + " seconds");
++                }
++            }
++        }
++        else if (retryAfter) {
++            const seconds = parseInt(retryAfter, 10);
++            if (!isNaN(seconds) && seconds > 0) {
++                if (seconds >= 60) {
++                    parts.push("Limit resets in " + Math.ceil(seconds / 60) + " minutes");
++                }
++                else {
++                    parts.push("Limit resets in " + seconds + " seconds");
++                }
++            }
++        }
++    }
++    return parts.length > 0 ? parts.join(", ") : undefined;
++}
+ /**
+  * Check if a model supports adaptive thinking (Opus 4.6 and Sonnet 4.6)
+  */
