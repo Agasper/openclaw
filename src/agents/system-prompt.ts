@@ -163,12 +163,7 @@ function buildDocsSection(params: { docsPath?: string; isMinimal: boolean; readT
   return [
     "## Documentation",
     `Docs: ${docsPath}`,
-    "Mirror: https://docs.openclaw.ai",
-    "Source: https://github.com/openclaw/openclaw",
-    "Community: https://discord.com/invite/clawd",
-    "Find new skills: https://clawhub.ai",
     "For behavior, commands, config, or architecture questions: consult local docs first.",
-    "When diagnosing issues, run `openclaw status` yourself when possible; only ask the user if you lack access (e.g., sandboxed).",
     "",
   ];
 }
@@ -327,7 +322,6 @@ export function buildAgentSystemPrompt(params: {
     toolLines.push(summary ? `- ${name}: ${summary}` : `- ${name}`);
   }
 
-  const hasGateway = availableTools.has("gateway");
   const readToolName = resolveToolName("read");
   const execToolName = resolveToolName("shell_exec");
   const processToolName = resolveToolName("process_ctrl");
@@ -455,29 +449,8 @@ export function buildAgentSystemPrompt(params: {
     "When approvals are required, preserve and show the full command/script exactly as provided (including chained operators like &&, ||, |, ;, or multiline shells) so the user can approve what will actually run.",
     "",
     ...safetySection,
-    "## CLI Quick Reference",
-    "The system is managed through subcommands. Do not invent commands.",
-    "To manage the Gateway daemon service (start/stop/restart):",
-    "- openclaw gateway status",
-    "- openclaw gateway start",
-    "- openclaw gateway stop",
-    "- openclaw gateway restart",
-    "If unsure, ask the user to run `openclaw help` (or `openclaw gateway --help`) and paste the output.",
-    "",
     ...skillsSection,
     ...memorySection,
-    // Skip self-update for subagent/none modes
-    hasGateway && !isMinimal ? "## Self-Update" : "",
-    hasGateway && !isMinimal
-      ? [
-          "Get Updates (self-update) is ONLY allowed when the user explicitly asks for it.",
-          "Do not run config.apply or update.run unless the user explicitly requests an update or config change; if it's not explicit, ask first.",
-          "Use config.schema.lookup with a specific dot path to inspect only the relevant config subtree before making config changes or answering config-field questions; avoid guessing field names/types.",
-          "Actions: config.schema.lookup, config.get, config.apply (validate + write full config, then restart), config.patch (partial update, merges with existing), update.run (update deps or git, then restart).",
-          "After restart, the runtime reconnects to the last active thread automatically.",
-        ].join("\n")
-      : "",
-    hasGateway && !isMinimal ? "" : "",
     "",
     // Skip model aliases for subagent/none modes
     params.modelAliasLines && params.modelAliasLines.length > 0 && !isMinimal
