@@ -1,8 +1,44 @@
 diff --git a/dist/providers/anthropic.js b/dist/providers/anthropic.js
-index d4fc29b8c97264ae51b212bdf69b29f7e8001ad1..72267cf1a7dce1faad77898b07b1a689eabddada 100644
+index d4fc29b8c97264ae51b212bdf69b29f7e8001ad1..ab29a2ceb0058a4585d276225d2640f21a73c1a5 100644
 --- a/dist/providers/anthropic.js
 +++ b/dist/providers/anthropic.js
-@@ -341,13 +341,90 @@ export const streamAnthropic = (model, context, options) => {
+@@ -1,4 +1,5 @@
+ import Anthropic from "@anthropic-ai/sdk";
++import { createHash, randomUUID } from "crypto";
+ import { getEnvApiKey } from "../env-api-keys.js";
+ import { calculateCost } from "../models.js";
+ import { AssistantMessageEventStream } from "../utils/event-stream.js";
+@@ -7,6 +8,29 @@ import { sanitizeSurrogates } from "../utils/sanitize-unicode.js";
+ import { buildCopilotDynamicHeaders, hasCopilotVisionInput } from "./github-copilot-headers.js";
+ import { adjustMaxTokensForThinking, buildBaseOptions } from "./simple-options.js";
+ import { transformMessages } from "./transform-messages.js";
++// Claude Code OAuth identity: session ID (stable per process)
++const ccSessionId = randomUUID();
++// Fingerprint computation — matches Claude Code's algorithm exactly
++// See: claude-code/src/utils/fingerprint.ts
++const FINGERPRINT_SALT = '59cf53e54c78';
++function computeFingerprint(messageText, version) {
++    const indices = [4, 7, 20];
++    const chars = indices.map(i => messageText[i] || '0').join('');
++    const input = `${FINGERPRINT_SALT}${chars}${version}`;
++    return createHash('sha256').update(input).digest('hex').slice(0, 3);
++}
++function extractFirstUserMessageText(messages) {
++    if (!messages) return '';
++    for (const msg of messages) {
++        if (msg.role !== 'user') continue;
++        if (typeof msg.content === 'string') return msg.content;
++        if (Array.isArray(msg.content)) {
++            const tb = msg.content.find(b => b.type === 'text');
++            if (tb) return tb.text;
++        }
++    }
++    return '';
++}
+ /**
+  * Resolve cache retention preference.
+  * Defaults to "short" and uses PI_CACHE_RETENTION for backward compatibility.
+@@ -341,13 +365,90 @@ export const streamAnthropic = (model, context, options) => {
              for (const block of output.content)
                  delete block.index;
              output.stopReason = options?.signal?.aborted ? "aborted" : "error";
@@ -94,3 +130,30 @@ index d4fc29b8c97264ae51b212bdf69b29f7e8001ad1..72267cf1a7dce1faad77898b07b1a689
  /**
   * Check if a model supports adaptive thinking (Opus 4.6 and Sonnet 4.6)
   */
+@@ -446,8 +547,9 @@ function createClient(model, apiKey, interleavedThinking, optionsHeaders, dynami
+                 accept: "application/json",
+                 "anthropic-dangerous-direct-browser-access": "true",
+                 "anthropic-beta": `claude-code-20250219,oauth-2025-04-20,${betaFeatures.join(",")}`,
+-                "user-agent": `claude-cli/${claudeCodeVersion}`,
++                "user-agent": `claude-cli/${claudeCodeVersion} (internal, cli)`,
+                 "x-app": "cli",
++                "X-Claude-Code-Session-Id": ccSessionId,
+             }, model.headers, optionsHeaders),
+         });
+         return { client, isOAuthToken: true };
+@@ -475,7 +577,15 @@ function buildParams(model, context, isOAuthToken, options) {
+     };
+     // For OAuth tokens, we MUST include Claude Code identity
+     if (isOAuthToken) {
++        // Compute fingerprint from first user message (matches CC algorithm)
++        const firstMsgText = extractFirstUserMessageText(context.messages);
++        const fingerprint = computeFingerprint(firstMsgText, claudeCodeVersion);
++        const billingHeader = `x-anthropic-billing-header: cc_version=${claudeCodeVersion}.${fingerprint}; cc_entrypoint=cli;`;
+         params.system = [
++            {
++                type: "text",
++                text: billingHeader,
++            },
+             {
+                 type: "text",
+                 text: "You are Claude Code, Anthropic's official CLI for Claude.",
