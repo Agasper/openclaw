@@ -48,6 +48,18 @@ export function resolveLiveSessionModelSelection(params: {
     agentId,
   });
   const entry = loadSessionStore(storePath, { skipCache: true })[sessionKey];
+  // Return null when the session store has no explicit user override (e.g. from
+  // /model command).  Without this, the function falls back to the agent's
+  // configured default model, which causes a false LiveSessionModelSwitchError
+  // when the model-fallback system runs a non-primary candidate — the candidate
+  // differs from the agent default, but no user initiated the switch.
+  if (
+    !entry?.providerOverride?.trim() &&
+    !entry?.modelOverride?.trim() &&
+    !entry?.authProfileOverride?.trim()
+  ) {
+    return null;
+  }
   const provider = entry?.providerOverride?.trim() || defaultModelRef.provider;
   const model = entry?.modelOverride?.trim() || defaultModelRef.model;
   const authProfileId = entry?.authProfileOverride?.trim() || undefined;

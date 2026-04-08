@@ -606,15 +606,25 @@ export async function runAgentTurnWithFallback(params: {
       break;
     } catch (err) {
       if (err instanceof LiveSessionModelSwitchError) {
-        params.followupRun.run.provider = err.provider;
-        params.followupRun.run.model = err.model;
-        params.followupRun.run.authProfileId = err.authProfileId;
-        params.followupRun.run.authProfileIdSource = err.authProfileId
-          ? err.authProfileIdSource
-          : undefined;
-        fallbackProvider = err.provider;
-        fallbackModel = err.model;
-        continue;
+        // If we're already on the requested model, the fallback chain exhausted
+        // all candidates but each was reverted by the live-session check.
+        // Don't retry — it would loop forever.
+        if (
+          params.followupRun.run.provider === err.provider &&
+          params.followupRun.run.model === err.model
+        ) {
+          // Fall through to normal error handling below.
+        } else {
+          params.followupRun.run.provider = err.provider;
+          params.followupRun.run.model = err.model;
+          params.followupRun.run.authProfileId = err.authProfileId;
+          params.followupRun.run.authProfileIdSource = err.authProfileId
+            ? err.authProfileIdSource
+            : undefined;
+          fallbackProvider = err.provider;
+          fallbackModel = err.model;
+          continue;
+        }
       }
       const message = err instanceof Error ? err.message : String(err);
       const isBilling = isBillingErrorMessage(message);

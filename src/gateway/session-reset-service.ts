@@ -336,11 +336,13 @@ export async function performGatewaySessionReset(params: {
       execAsk: currentEntry?.execAsk,
       execNode: currentEntry?.execNode,
       responseUsage: currentEntry?.responseUsage,
-      providerOverride: currentEntry?.providerOverride,
-      modelOverride: currentEntry?.modelOverride,
-      authProfileOverride: currentEntry?.authProfileOverride,
-      authProfileOverrideSource: currentEntry?.authProfileOverrideSource,
-      authProfileOverrideCompactionCount: currentEntry?.authProfileOverrideCompactionCount,
+      // Model overrides are NOT carried over — /new resets to the agent's
+      // default model so that model-fallback chains work again.
+      // providerOverride: currentEntry?.providerOverride,
+      // modelOverride: currentEntry?.modelOverride,
+      // authProfileOverride: currentEntry?.authProfileOverride,
+      // authProfileOverrideSource: currentEntry?.authProfileOverrideSource,
+      // authProfileOverrideCompactionCount: currentEntry?.authProfileOverrideCompactionCount,
       groupActivation: currentEntry?.groupActivation,
       groupActivationNeedsSystemIntro: currentEntry?.groupActivationNeedsSystemIntro,
       chatType: currentEntry?.chatType,
