@@ -614,12 +614,10 @@ export function buildAgentSystemPrompt(params: {
   // Skip heartbeats for subagent/none modes
   if (!isMinimal && heartbeatPrompt) {
     lines.push(
-      "## Heartbeats",
-      `Heartbeat prompt: ${heartbeatPrompt}`,
-      "If you receive a heartbeat poll (a user message matching the heartbeat prompt above), and there is nothing that needs attention, reply exactly:",
-      "HEARTBEAT_OK",
-      'A leading/trailing "HEARTBEAT_OK" in your reply is treated as an acknowledgement and may be silently discarded.',
-      'If something needs attention, do NOT include "HEARTBEAT_OK"; reply with the alert text instead.',
+      "## Periodic Checks",
+      `When polled: ${heartbeatPrompt}`,
+      "A leading/trailing HEARTBEAT_OK in your reply is treated as an ack and may be silently discarded.",
+      "If something needs attention, do NOT include HEARTBEAT_OK; reply with the alert text instead.",
       "",
     );
   }
