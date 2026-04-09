@@ -414,11 +414,13 @@ export async function initSessionState(params: {
       persistedVerbose = entry.verboseLevel;
       persistedReasoning = entry.reasoningLevel;
       persistedTtsAuto = entry.ttsAuto;
-      persistedModelOverride = entry.modelOverride;
-      persistedProviderOverride = entry.providerOverride;
-      persistedAuthProfileOverride = entry.authProfileOverride;
-      persistedAuthProfileOverrideSource = entry.authProfileOverrideSource;
-      persistedAuthProfileOverrideCompactionCount = entry.authProfileOverrideCompactionCount;
+      // Model overrides are NOT carried over — /new resets to the agent's
+      // default model so that model-fallback chains work again.
+      // persistedModelOverride = entry.modelOverride;
+      // persistedProviderOverride = entry.providerOverride;
+      // persistedAuthProfileOverride = entry.authProfileOverride;
+      // persistedAuthProfileOverrideSource = entry.authProfileOverrideSource;
+      // persistedAuthProfileOverrideCompactionCount = entry.authProfileOverrideCompactionCount;
       persistedCliSessionIds = entry.cliSessionIds;
       persistedCliSessionBindings = entry.cliSessionBindings;
       persistedClaudeCliSessionId = entry.claudeCliSessionId;
