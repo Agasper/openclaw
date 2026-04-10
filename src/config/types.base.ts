@@ -201,6 +201,14 @@ export type DiagnosticsCacheTraceConfig = {
   includeSystem?: boolean;
 };
 
+export type DiagnosticsPrometheusConfig = {
+  enabled?: boolean;
+  port?: number;
+  path?: string;
+  prefix?: string;
+  defaultLabels?: Record<string, string>;
+};
+
 export type DiagnosticsConfig = {
   enabled?: boolean;
   /** Optional ad-hoc diagnostics flags (e.g. "telegram.http"). */
@@ -208,6 +216,7 @@ export type DiagnosticsConfig = {
   /** Threshold in ms before a processing session logs "stuck session" diagnostics. */
   stuckSessionWarnMs?: number;
   otel?: DiagnosticsOtelConfig;
+  prometheus?: DiagnosticsPrometheusConfig;
   cacheTrace?: DiagnosticsCacheTraceConfig;
 };
 

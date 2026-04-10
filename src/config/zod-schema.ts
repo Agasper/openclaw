@@ -295,6 +295,16 @@ export const OpenClawSchema = z
           })
           .strict()
           .optional(),
+        prometheus: z
+          .object({
+            enabled: z.boolean().optional(),
+            port: z.number().int().positive().optional(),
+            path: z.string().optional(),
+            prefix: z.string().optional(),
+            defaultLabels: z.record(z.string(), z.string()).optional(),
+          })
+          .strict()
+          .optional(),
         cacheTrace: z
           .object({
             enabled: z.boolean().optional(),

@@ -1,3 +1,17 @@
+diff --git a/dist/models.js b/dist/models.js
+index b859f4aedbee7965cd402b48ec1215fd0d2f74a4..103fa16e2a82b67e87cbed66ae5a73da79823ca2 100644
+--- a/dist/models.js
++++ b/dist/models.js
+@@ -20,6 +20,9 @@ export function getModels(provider) {
+     return models ? Array.from(models.values()) : [];
+ }
+ export function calculateCost(model, usage) {
++    if (!model.cost) {
++        return usage.cost;
++    }
+     usage.cost.input = (model.cost.input / 1000000) * usage.input;
+     usage.cost.output = (model.cost.output / 1000000) * usage.output;
+     usage.cost.cacheRead = (model.cost.cacheRead / 1000000) * usage.cacheRead;
 diff --git a/dist/providers/anthropic.js b/dist/providers/anthropic.js
 index d4fc29b8c97264ae51b212bdf69b29f7e8001ad1..ab29a2ceb0058a4585d276225d2640f21a73c1a5 100644
 --- a/dist/providers/anthropic.js

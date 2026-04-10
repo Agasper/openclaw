@@ -1138,6 +1138,29 @@ export const GENERATED_BUNDLED_PLUGIN_METADATA = [
     },
   },
   {
+    dirName: "diagnostics-prometheus",
+    idHint: "diagnostics-prometheus",
+    source: {
+      source: "./index.ts",
+      built: "index.js",
+    },
+    publicSurfaceArtifacts: ["api.js"],
+    packageName: "@openclaw/diagnostics-prometheus",
+    packageVersion: "2026.4.9",
+    packageDescription: "OpenClaw diagnostics Prometheus exporter",
+    packageManifest: {
+      extensions: ["./index.ts"],
+    },
+    manifest: {
+      id: "diagnostics-prometheus",
+      configSchema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {},
+      },
+    },
+  },
+  {
     dirName: "diffs",
     idHint: "diffs",
     source: {
