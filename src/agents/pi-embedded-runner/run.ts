@@ -111,9 +111,21 @@ export async function runEmbeddedPiAgent(
       : "markdown");
   const isProbeSession = params.sessionId?.startsWith("probe-") ?? false;
 
+  const enqueueTime = Date.now();
+  if (!isProbeSession) {
+    log.info(
+      `[lifecycle] runner enqueue: sessionKey=${params.sessionKey} sessionLane=${sessionLane} globalLane=${globalLane}`,
+    );
+  }
+
   return enqueueSession(() =>
     enqueueGlobal(async () => {
       const started = Date.now();
+      if (!isProbeSession) {
+        log.info(
+          `[lifecycle] runner got global slot: sessionKey=${params.sessionKey} waitMs=${started - enqueueTime}`,
+        );
+      }
       const workspaceResolution = resolveRunWorkspaceDir({
         workspaceDir: params.workspaceDir,
         sessionKey: params.sessionKey,
@@ -1420,6 +1432,11 @@ export async function runEmbeddedPiAgent(
           };
         }
       } finally {
+        if (!isProbeSession) {
+          log.info(
+            `[lifecycle] runner exiting: sessionKey=${params.sessionKey} totalMs=${Date.now() - started}`,
+          );
+        }
         await contextEngine.dispose?.();
         stopRuntimeAuthRefreshTimer();
       }

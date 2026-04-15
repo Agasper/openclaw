@@ -130,10 +130,25 @@ function drainLane(lane: string) {
         const taskId = getQueueState().nextTaskId++;
         const taskGeneration = state.generation;
         state.activeTaskIds.add(taskId);
+        diag.debug(
+          `[lifecycle] lane task start: lane=${lane} taskId=${taskId} active=${state.activeTaskIds.size} queued=${state.queue.length} waitedMs=${waitedMs}`,
+        );
         void (async () => {
           const startTime = Date.now();
+          // Heartbeat: log every 60s while the task is still running
+          const heartbeat =
+            !lane.startsWith("session:") && !lane.startsWith("auth-probe:")
+              ? setInterval(() => {
+                  diag.warn(
+                    `[lifecycle] lane task still running: lane=${lane} taskId=${taskId} elapsedMs=${Date.now() - startTime} active=${state.activeTaskIds.size} queued=${state.queue.length}`,
+                  );
+                }, 60_000)
+              : null;
           try {
             const result = await entry.task();
+            if (heartbeat) {
+              clearInterval(heartbeat);
+            }
             const completedCurrentGeneration = completeTask(state, taskId, taskGeneration);
             if (completedCurrentGeneration) {
               diag.debug(
@@ -143,6 +158,9 @@ function drainLane(lane: string) {
             }
             entry.resolve(result);
           } catch (err) {
+            if (heartbeat) {
+              clearInterval(heartbeat);
+            }
             const completedCurrentGeneration = completeTask(state, taskId, taskGeneration);
             const isProbeLane = lane.startsWith("auth-probe:") || lane.startsWith("session:probe-");
             if (!isProbeLane && !isExpectedNonErrorLaneFailure(err)) {
@@ -209,6 +227,11 @@ export function enqueueCommandInLane<T>(
       onWait: opts?.onWait,
     });
     logLaneEnqueue(cleaned, getLaneDepth(state));
+    if (cleaned === (CommandLane.Main as string) && getLaneDepth(state) > 1) {
+      diag.info(
+        `[lifecycle] main lane queueing: depth=${getLaneDepth(state)} active=${state.activeTaskIds.size} queued=${state.queue.length}`,
+      );
+    }
     drainLane(cleaned);
   });
 }

@@ -153,6 +153,7 @@ import {
   stripSessionsYieldArtifacts,
   waitForSessionsYieldAbortSettle,
 } from "./attempt.sessions-yield.js";
+import { wrapStreamFnHandleSensitiveStopReason } from "./attempt.stop-reason-recovery.js";
 import {
   appendAttemptCacheTtlIfNeeded,
   composeSystemPromptWithHookContext,
@@ -164,7 +165,6 @@ import {
   wrapStreamFnDecodeXaiToolCallArguments,
   wrapStreamFnRepairMalformedToolCallArguments,
 } from "./attempt.tool-call-argument-repair.js";
-import { wrapStreamFnHandleSensitiveStopReason } from "./attempt.stop-reason-recovery.js";
 import {
   wrapStreamFnSanitizeMalformedToolCalls,
   wrapStreamFnTrimToolCallNames,
@@ -1531,11 +1531,17 @@ export async function runEmbeddedAttempt(
 
           // Only pass images option if there are actually images to pass
           // This avoids potential issues with models that don't expect the images parameter
+          log.info(
+            `[lifecycle] model prompt start: sessionKey=${params.sessionKey} provider=${params.provider}/${params.modelId}`,
+          );
           if (imageResult.images.length > 0) {
             await abortable(activeSession.prompt(effectivePrompt, { images: imageResult.images }));
           } else {
             await abortable(activeSession.prompt(effectivePrompt));
           }
+          log.info(
+            `[lifecycle] model prompt done: sessionKey=${params.sessionKey} durationMs=${Date.now() - promptStartedAt}`,
+          );
         } catch (err) {
           // Yield-triggered abort is intentional — treat as clean stop, not error.
           // Check the abort reason to distinguish from external aborts (timeout, user cancel)
@@ -1559,6 +1565,9 @@ export async function runEmbeddedAttempt(
               await persistSessionsYieldContextMessage(activeSession, yieldMessage);
             }
           } else {
+            log.warn(
+              `[lifecycle] model prompt error: sessionKey=${params.sessionKey} durationMs=${Date.now() - promptStartedAt} error=${String(err)}`,
+            );
             promptError = err;
             promptErrorSource = "prompt";
           }

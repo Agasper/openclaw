@@ -23,6 +23,7 @@ import {
 } from "../../hooks/message-hook-mappers.js";
 import { isDiagnosticsEnabled } from "../../infra/diagnostic-events.js";
 import {
+  diagnosticLogger,
   logMessageProcessed,
   logMessageQueued,
   logSessionStateChange,
@@ -186,10 +187,13 @@ export async function dispatchReplyFromConfig(params: {
     });
   };
 
+  const dispatchStartTime = Date.now();
+
   const markProcessing = () => {
     if (!canTrackSession || !sessionKey) {
       return;
     }
+    diagnosticLogger.info(`[lifecycle] markProcessing: sessionKey=${sessionKey}`);
     logMessageQueued({ sessionKey, channel, source: "dispatch" });
     logSessionStateChange({
       sessionKey,
@@ -202,6 +206,9 @@ export async function dispatchReplyFromConfig(params: {
     if (!canTrackSession || !sessionKey) {
       return;
     }
+    diagnosticLogger.info(
+      `[lifecycle] markIdle: sessionKey=${sessionKey} reason=${reason} durationMs=${Date.now() - dispatchStartTime}`,
+    );
     logSessionStateChange({
       sessionKey,
       state: "idle",
