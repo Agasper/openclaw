@@ -141,6 +141,22 @@ export function buildEmbeddedRunBaseParams(params: {
   };
 }
 
+function resolveAgentLane(agentId: string | undefined, config: unknown): string | undefined {
+  if (!agentId) {
+    return undefined;
+  }
+  const cfg = config as { agents?: { list?: Array<{ id: string; maxConcurrent?: number }> } };
+  const agentEntry = cfg?.agents?.list?.find((a) => a.id === agentId);
+  if (
+    agentEntry &&
+    typeof agentEntry.maxConcurrent === "number" &&
+    Number.isFinite(agentEntry.maxConcurrent)
+  ) {
+    return `agent:${agentId}`;
+  }
+  return undefined;
+}
+
 export function buildEmbeddedContextFromTemplate(params: {
   run: FollowupRun["run"];
   sessionCtx: TemplateContext;
@@ -150,6 +166,7 @@ export function buildEmbeddedContextFromTemplate(params: {
     sessionId: params.run.sessionId,
     sessionKey: params.run.sessionKey,
     agentId: params.run.agentId,
+    lane: resolveAgentLane(params.run.agentId, params.run.config),
     messageProvider: resolveOriginMessageProvider({
       originatingChannel: params.sessionCtx.OriginatingChannel,
       provider: params.sessionCtx.Provider,

@@ -93,6 +93,8 @@ export type AgentConfig = {
   tools?: AgentToolsConfig;
   /** Optional runtime descriptor for this agent. */
   runtime?: AgentRuntimeConfig;
+  /** Per-agent max concurrent runs. Agents with this set get their own processing lane. */
+  maxConcurrent?: number;
 };
 
 export type AgentsConfig = {
