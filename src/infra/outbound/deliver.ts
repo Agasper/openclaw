@@ -131,6 +131,7 @@ type ChannelHandlerParams = {
   silent?: boolean;
   mediaLocalRoots?: readonly string[];
   gatewayClientScopes?: readonly string[];
+  toolContext?: import("../../channels/plugins/types.js").ChannelThreadingToolContext;
 };
 
 // Channel docking: outbound delivery delegates to plugin.outbound adapters.
@@ -252,6 +253,7 @@ function createChannelOutboundContextBase(
     silent: params.silent,
     mediaLocalRoots: params.mediaLocalRoots,
     gatewayClientScopes: params.gatewayClientScopes,
+    toolContext: params.toolContext,
   };
 }
 
@@ -278,6 +280,8 @@ type DeliverOutboundPayloadsCoreParams = {
   mirror?: DeliveryMirror;
   silent?: boolean;
   gatewayClientScopes?: readonly string[];
+  /** Inbound turn threading context (for cross-thread validation in plugins). */
+  toolContext?: import("../../channels/plugins/types.js").ChannelThreadingToolContext;
 };
 
 function collectPayloadMediaSources(payloads: ReplyPayload[]): string[] {
@@ -581,6 +585,7 @@ async function deliverOutboundPayloadsCore(
     silent: params.silent,
     mediaLocalRoots,
     gatewayClientScopes: params.gatewayClientScopes,
+    toolContext: params.toolContext,
   });
   const configuredTextLimit = handler.chunker
     ? resolveTextChunkLimit(cfg, channel, accountId, {

@@ -153,6 +153,7 @@ export async function executeSendAction(params: {
     mirror: params.ctx.mirror,
     abortSignal: params.ctx.abortSignal,
     silent: params.ctx.silent,
+    toolContext: params.ctx.toolContext,
   });
 
   return {

@@ -26,6 +26,7 @@ import type {
   ChannelSecurityDmPolicy,
   ChannelSetupInput,
   ChannelStatusIssue,
+  ChannelThreadingToolContext,
 } from "./types.core.js";
 
 export type ChannelExecApprovalInitiatingSurfaceState =
@@ -146,6 +147,8 @@ export type ChannelOutboundContext = {
   deps?: OutboundSendDeps;
   silent?: boolean;
   gatewayClientScopes?: readonly string[];
+  /** Inbound turn threading context (for cross-thread validation in plugins). */
+  toolContext?: ChannelThreadingToolContext;
 };
 
 export type ChannelOutboundPayloadContext = ChannelOutboundContext & {

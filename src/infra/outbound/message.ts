@@ -53,6 +53,8 @@ type MessageSendParams = {
   mirror?: OutboundMirror;
   abortSignal?: AbortSignal;
   silent?: boolean;
+  /** Inbound turn threading context (for cross-thread validation in plugins). */
+  toolContext?: import("../../channels/plugins/types.js").ChannelThreadingToolContext;
 };
 
 export type MessageSendResult = {
@@ -252,6 +254,7 @@ export async function sendMessage(params: MessageSendParams): Promise<MessageSen
       bestEffort: params.bestEffort,
       abortSignal: params.abortSignal,
       silent: params.silent,
+      toolContext: params.toolContext,
       mirror: params.mirror
         ? {
             ...params.mirror,
