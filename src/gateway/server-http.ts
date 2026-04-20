@@ -709,6 +709,7 @@ export function createHooksRequestHandler(
             deliver: resolveHookDeliver(mapped.action.deliver),
             channel,
             to: mapped.action.to,
+            threadId: mapped.action.threadId,
             model: mapped.action.model,
             thinking: mapped.action.thinking,
             timeoutSeconds: mapped.action.timeoutSeconds,

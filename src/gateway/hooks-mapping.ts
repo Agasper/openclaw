@@ -54,6 +54,7 @@ export type HookAction =
       allowUnsafeExternalContent?: boolean;
       channel?: HookMessageChannel;
       to?: string;
+      threadId?: string;
       model?: string;
       thinking?: string;
       timeoutSeconds?: number;
@@ -94,6 +95,7 @@ type HookTransformResult = Partial<{
   allowUnsafeExternalContent: boolean;
   channel: HookMessageChannel;
   to: string;
+  threadId: string;
   model: string;
   thinking: string;
   timeoutSeconds: number;
@@ -306,6 +308,7 @@ function mergeAction(
         : baseAgent?.allowUnsafeExternalContent,
     channel: override.channel ?? baseAgent?.channel,
     to: override.to ?? baseAgent?.to,
+    threadId: override.threadId ?? baseAgent?.threadId,
     model: override.model ?? baseAgent?.model,
     thinking: override.thinking ?? baseAgent?.thinking,
     timeoutSeconds: override.timeoutSeconds ?? baseAgent?.timeoutSeconds,

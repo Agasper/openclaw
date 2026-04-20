@@ -143,6 +143,7 @@ async function resolveCronDeliveryContext(params: {
   const resolvedDelivery = await resolveDeliveryTarget(params.cfg, params.agentId, {
     channel: deliveryPlan.channel ?? "last",
     to: deliveryPlan.to,
+    threadId: deliveryPlan.threadId,
     accountId: deliveryPlan.accountId,
     sessionKey: params.job.sessionKey,
   });
@@ -507,6 +508,12 @@ export async function runCronIsolatedAgentTurn(params: {
             senderIsOwner: true,
             messageChannel,
             agentAccountId: resolvedDelivery.accountId,
+            currentChannelId:
+              resolvedDelivery.ok && resolvedDelivery.to ? resolvedDelivery.to : undefined,
+            currentThreadTs:
+              resolvedDelivery.ok && resolvedDelivery.threadId
+                ? String(resolvedDelivery.threadId)
+                : undefined,
             sessionFile,
             agentDir,
             workspaceDir,

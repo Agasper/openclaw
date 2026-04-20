@@ -43,6 +43,8 @@ export async function resolveDeliveryTarget(
   jobPayload: {
     channel?: "last" | ChannelId;
     to?: string;
+    /** Explicit thread/topic ID from job.delivery — overrides session-derived threadId. */
+    threadId?: string;
     /** Explicit accountId from job.delivery — overrides session-derived and binding-derived values. */
     accountId?: string;
     sessionKey?: string;
@@ -125,15 +127,19 @@ export async function resolveDeliveryTarget(
     accountId = jobPayload.accountId;
   }
 
-  // Carry threadId when it was explicitly set (from :topic: parsing or config)
-  // or when delivering to the same recipient as the session's last conversation.
-  // Session-derived threadIds are dropped when the target differs to prevent
-  // stale thread IDs from leaking to a different chat.
+  // Explicit threadId from delivery config takes highest precedence.
+  // Otherwise, carry session-derived threadId when it was explicitly set
+  // (from :topic: parsing) or when delivering to the same recipient.
+  const explicitConfigThreadId =
+    typeof jobPayload.threadId === "string" && jobPayload.threadId.trim()
+      ? jobPayload.threadId.trim()
+      : undefined;
   const threadId =
-    resolved.threadId &&
+    explicitConfigThreadId ??
+    (resolved.threadId &&
     (resolved.threadIdExplicit || (resolved.to && resolved.to === resolved.lastTo))
       ? resolved.threadId
-      : undefined;
+      : undefined);
 
   if (!channel) {
     return {

@@ -729,7 +729,12 @@ export function createMessageTool(options?: MessageToolOptions): AnyAgentTool {
           (typeof params.to === "string" && params.to.trim().length > 0) ||
           (typeof params.channelId === "string" && params.channelId.trim().length > 0) ||
           (Array.isArray(params.targets) &&
-            params.targets.some((value) => typeof value === "string" && value.trim().length > 0));
+            params.targets.some((value) => typeof value === "string" && value.trim().length > 0)) ||
+          // Allow session context (currentChannelId) to satisfy the explicit target requirement.
+          // This enables agent send_message without routing args in cron/hook sessions
+          // where the delivery target provides the channel context.
+          (typeof options?.currentChannelId === "string" &&
+            options.currentChannelId.trim().length > 0);
         if (!explicitTarget) {
           throw new Error(
             "Explicit message target required for this run. Provide target/targets (and channel when needed).",

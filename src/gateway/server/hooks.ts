@@ -71,6 +71,16 @@ export function createGatewayHooksRequestHandler(params: {
         allowUnsafeExternalContent: value.allowUnsafeExternalContent,
         externalContentSource: value.externalContentSource,
       },
+      ...(value.threadId
+        ? {
+            delivery: {
+              mode: "announce" as const,
+              channel: value.channel,
+              to: value.to,
+              threadId: value.threadId,
+            },
+          }
+        : {}),
       state: { nextRunAtMs: now },
     };
 

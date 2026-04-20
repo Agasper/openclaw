@@ -14,6 +14,8 @@ export type CronDeliveryPlan = {
   mode: CronDeliveryMode;
   channel?: CronMessageChannel;
   to?: string;
+  /** Explicit thread/topic ID for threaded delivery. */
+  threadId?: string;
   /** Explicit channel account id from the delivery config, if set. */
   accountId?: string;
   source: "delivery" | "payload";
@@ -70,6 +72,7 @@ export function resolveCronDeliveryPlan(job: CronJob): CronDeliveryPlan {
     (delivery as { channel?: unknown } | undefined)?.channel,
   );
   const deliveryTo = normalizeTo((delivery as { to?: unknown } | undefined)?.to);
+  const deliveryThreadId = normalizeTo((delivery as { threadId?: unknown } | undefined)?.threadId);
   const channel = deliveryChannel ?? payloadChannel ?? "last";
   const to = deliveryTo ?? payloadTo;
   const deliveryAccountId = normalizeAccountId(
@@ -81,6 +84,7 @@ export function resolveCronDeliveryPlan(job: CronJob): CronDeliveryPlan {
       mode: resolvedMode,
       channel: resolvedMode === "announce" ? channel : undefined,
       to,
+      threadId: deliveryThreadId,
       accountId: deliveryAccountId,
       source: "delivery",
       requested: resolvedMode === "announce",

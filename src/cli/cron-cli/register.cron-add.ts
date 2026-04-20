@@ -98,6 +98,10 @@ export function registerCronAddCommand(cron: Command) {
         "Delivery destination (E.164, Telegram chatId, or Discord channel/user)",
       )
       .option("--account <id>", "Channel account id for delivery (multi-account setups)")
+      .option(
+        "--thread-id <id>",
+        "Thread/topic ID for threaded delivery (e.g. Mattermost thread root post ID)",
+      )
       .option("--best-effort-deliver", "Do not fail the job if delivery fails", false)
       .option("--json", "Output JSON", false)
       .action(async (opts: GatewayRpcOpts & Record<string, unknown>, cmd?: Command) => {
@@ -243,6 +247,10 @@ export function registerCronAddCommand(cron: Command) {
                       ? opts.channel.trim()
                       : undefined,
                   to: typeof opts.to === "string" && opts.to.trim() ? opts.to.trim() : undefined,
+                  threadId:
+                    typeof opts.threadId === "string" && opts.threadId.trim()
+                      ? opts.threadId.trim()
+                      : undefined,
                   accountId,
                   bestEffort: opts.bestEffortDeliver ? true : undefined,
                 }

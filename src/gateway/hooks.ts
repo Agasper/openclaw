@@ -209,6 +209,7 @@ export type HookAgentPayload = {
   deliver: boolean;
   channel: HookMessageChannel;
   to?: string;
+  threadId?: string;
   model?: string;
   thinking?: string;
   timeoutSeconds?: number;
